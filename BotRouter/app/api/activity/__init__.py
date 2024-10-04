@@ -1,0 +1,1 @@
+from .school_acivities import router as activity_router

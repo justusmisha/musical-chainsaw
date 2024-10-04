@@ -1,7 +1,7 @@
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup
 
 from Bot.app.keyboards.user.school import school_menu
-from Bot.app.loaders import dp
+from Bot.loader import dp
 
 
 @dp.callback_query_handler(text='school_start')

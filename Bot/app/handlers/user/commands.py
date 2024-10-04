@@ -1,7 +1,7 @@
 from aiogram import types
 
 from Bot.app.keyboards.user.menu import start_menu
-from Bot.app.loaders import dp
+from Bot.loader import dp
 
 
 @dp.message_handler(commands=['start'])
