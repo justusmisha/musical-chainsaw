@@ -14,7 +14,6 @@ async def read_activities(db: AsyncSession = Depends(get_async_session)):
     return activities
 
 
-# @router.get("/by_name")
 @router.get("/by_name", response_model=SchoolActivitySm)
 async def get_acivity_by_name(name: str, db: AsyncSession = Depends(get_async_session)):
     activity = await db_activity_by_name(name, db)

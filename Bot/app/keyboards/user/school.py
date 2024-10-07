@@ -8,10 +8,10 @@ async def school_menu() -> InlineKeyboardMarkup():
     kb = InlineKeyboardMarkup()
     kb.row(InlineKeyboardButton(text='О школе', callback_data='school_about'),
            InlineKeyboardButton(text='Кружки', callback_data='school_clubs'))
-    kb.row(InlineKeyboardButton(text='Продленка', callback_data='school_'),
-           InlineKeyboardButton(text='Цены', callback_data='school_prices'))
-    kb.row(InlineKeyboardButton(text='Классы', callback_data='school_classes'),
-           InlineKeyboardButton(text='Питание', callback_data='school_food'))
+    kb.row(InlineKeyboardButton(text='Цены', callback_data='school_classes_price'),
+           InlineKeyboardButton(text='Классы', callback_data='school_classes_info'))
+    kb.row(InlineKeyboardButton(text='Питание', callback_data='school_food'),
+           InlineKeyboardButton(text='Документы', callback_data='school_docs'))
     kb.row(InlineKeyboardButton(text='3D экскурсия', url='https://krylia-nn.ru/3d-ekskursiya-po-shkole.html'),
            InlineKeyboardButton(text='На сайт', url='https://krylia-nn.ru'))
     kb.add(InlineKeyboardButton(text='Назад', callback_data='start_menu'))
@@ -53,5 +53,5 @@ async def one_activ(activ_name) -> InlineKeyboardMarkup:
            InlineKeyboardButton(text='Записаться', callback_data=f'school_activ_contact_{activ_name}'))
     kb.add(InlineKeyboardButton(text='Назад', callback_data='school_start'))
     return kb
-#1,1,Лепка,"{""one"": 1, ""four"": 12, ""eight"": 13, ""month"": 14}",6,15,"{""ПН"": ""12-13"", ""СР"": ""14-16"", ""ПТ"": ""14-15""}",+799999999
-#1,Екатерина,Юстус,43,20,тест
+
+

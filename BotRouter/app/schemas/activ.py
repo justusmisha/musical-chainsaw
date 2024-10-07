@@ -3,8 +3,6 @@ from typing import Dict, Optional
 
 from pydantic import BaseModel
 
-from BotRouter.app.db.models import Teacher
-
 
 class TeacherSm(BaseModel):
     id: int
