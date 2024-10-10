@@ -20,8 +20,8 @@ async def get_class_info(class_number: int):
                 f"Записаться на встречу\n{config.SCHOOL_CONTACT_NUMBER}"
                 )
         kb = InlineKeyboardMarkup()
-        kb.add(InlineKeyboardButton(text='Преподаватели', callback_data=f'teachers_class_{class_number}'))
-        kb.add(InlineKeyboardButton(text='Назад', callback_data=f'school_start'))
+        kb.add(InlineKeyboardButton(text='👩‍🏫 Педагоги группы', callback_data=f'teachers_class_{class_number}'))
+        kb.add(InlineKeyboardButton(text='◀️ Назад', callback_data=f'school_classes_info'))
 
         return text, kb
 
@@ -65,7 +65,7 @@ async def get_grad_info(class_grad: str):
                 f"Записаться на встречу\n{config.SCHOOL_CONTACT_NUMBER}"
                 )
         kb = InlineKeyboardMarkup()
-        kb.add(InlineKeyboardButton(text='Назад', callback_data=f'school_start'))
+        kb.add(InlineKeyboardButton(text='◀️ Назад', callback_data=f'school_start'))
 
         return text, kb
 

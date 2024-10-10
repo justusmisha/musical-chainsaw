@@ -4,10 +4,12 @@ from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardBut
 from Bot.app.api.endpoints import UserEndpoints
 from Bot.app.bot_loader import bot
 from Bot.app.data.config import  ERROR_MESSAGE
+from Bot.app.keyboards.user.general import kb_menu_back
 from Bot.app.keyboards.user.school import school_clubs, one_activ
 from Bot.app.utils.activiy import activ_by_name
 from Bot.app.utils.photos import load_photos
 from Bot.loader import dp, api_client
+from logger import logger
 
 
 @dp.callback_query_handler(text='school_clubs')
@@ -15,7 +17,7 @@ async def school_activs_handler(call: CallbackQuery):
     kb = await school_clubs()
     if kb is None:
         await call.message.edit_text(text='Кружков пока что нет',
-                                 reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton(text='Назад', callback_data='school_start')))
+                                 reply_markup=kb_menu_back)
     elif not kb:
         await call.message.answer(text='Возникла ошибка с получением кружков\n'
                                        f'{ERROR_MESSAGE}')
@@ -34,7 +36,7 @@ async def activ_name_handler(call: CallbackQuery, state: FSMContext):
     elif result is None:
         await call.message.edit_text(text='Кружков с таким названием нет',
                                      reply_markup=InlineKeyboardMarkup().add(
-                                         InlineKeyboardButton(text='Назад', callback_data='school_start')))
+                                         InlineKeyboardButton(text='◀️ Назад', callback_data='school_start')))
     else:
         kb = await one_activ(result['name'])
         await call.message.edit_text(text=f"<b>{result['name']}</b>", reply_markup=kb)
@@ -56,7 +58,7 @@ async def activ_schedule_handler(call: CallbackQuery, state: FSMContext):
     await call.message.edit_text(text=text,
                                  reply_markup=
                                  InlineKeyboardMarkup().add(
-                                     InlineKeyboardButton(text='Назад', callback_data='school_start')))
+                                     InlineKeyboardButton(text='◀️ Назад', callback_data=f'school_club_{activ_name}')))
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith('school_activ_price_'), state='*')
@@ -74,7 +76,7 @@ async def activ_schedule_handler(call: CallbackQuery, state: FSMContext):
             f"Восемь занятий: {prices['eight']} руб.\n"
             f"Абонимент на месяц: {prices['month']} руб.\n")
     await call.message.edit_text(text=text, reply_markup=InlineKeyboardMarkup().add(
-                                     InlineKeyboardButton(text='Назад', callback_data='school_start')))
+                                     InlineKeyboardButton(text='◀️ Назад', callback_data=f'school_club_{activ_name}')))
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith('school_activ_photos_'), state='*')
@@ -93,9 +95,9 @@ async def activ_photo_handler(call: CallbackQuery):
             await call.message.answer_media_group(media=media_group)
 
             await call.message.answer(text=f"Фотографии с кружка <b>{activ_name}</b> были загружены", reply_markup=InlineKeyboardMarkup().add(
-                InlineKeyboardButton(text='Назад', callback_data='school_start')))
+                InlineKeyboardButton(text='◀️ Назад', callback_data=f'school_club_{activ_name}')))
         except Exception as e:
-            print(f"Error sending media group: {e}")
+            logger.error(f"Error sending media group: {e}")
             await call.message.answer(text='Произошла ошибка при отправке фотографий.')
     else:
         await call.message.answer(text='Не удалось загрузить фотографии.')
@@ -113,4 +115,4 @@ async def activ_contact_handler(call: CallbackQuery):
     text = (f"<b>Запись на кружок <i>{result['name']}</i></b> по телефону\n\n"
             f"{result['contact_number']}")
     await call.message.edit_text(text=text, reply_markup=InlineKeyboardMarkup().add(
-        InlineKeyboardButton(text='Назад', callback_data='school_start')))
+        InlineKeyboardButton(text='◀️ Назад', callback_data=f'school_club_{activ_name}')))

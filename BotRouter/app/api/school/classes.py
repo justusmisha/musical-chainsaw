@@ -16,7 +16,7 @@ async def read_activities(class_number: int, db: AsyncSession = Depends(get_asyn
     return school_class
 
 
-@router.get('/{grad}', response_model=List[SchoolClass])
+@router.get('/grade/{grad}', response_model=List[SchoolClass])
 async def read_activities(grad: str, db: AsyncSession = Depends(get_async_session)):
     school_classes = await get_class_by_grad(db=db, grad=grad)
     return school_classes

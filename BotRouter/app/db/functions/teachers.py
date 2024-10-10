@@ -44,3 +44,4 @@ async def get_all_teachers(db: AsyncSession) -> Sequence[Teacher]:
         teachers = result.scalars().all()
 
     return teachers
+

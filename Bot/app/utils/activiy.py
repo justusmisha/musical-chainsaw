@@ -7,5 +7,4 @@ async def activ_by_name(activ_name):
     if not result or result is None:
         return False
     else:
-        print(result)
         return result

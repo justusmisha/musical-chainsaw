@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    Column, Integer, String, ForeignKey, JSON, BigInteger
+    Column, Integer, String, ForeignKey, JSON, BigInteger, LargeBinary
 )
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -33,11 +33,10 @@ class Class(Base):
 class Teacher(Base):
     __tablename__ = 'teacher'
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    surname = Column(String, nullable=False)
-    age = Column(Integer, default=None)
-    experience = Column(Integer, default=None)
-    description = Column(String, default=None)
+    fio = Column(String, nullable=False)
+    subject = Column(String, nullable=False)
+    file_path = Column(String, nullable=False)
+
 
     classes = relationship("ClassTeacher", back_populates="teacher")
 

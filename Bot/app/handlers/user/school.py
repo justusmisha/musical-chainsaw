@@ -1,11 +1,14 @@
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton, InputFile
 
 from Bot.app.api.endpoints import UserEndpoints
 from Bot.app.data import config
 from Bot.app.keyboards.user.classes import start_classes_menu, get_all_classes_kb
+from Bot.app.keyboards.user.general import kb_menu_back
 from Bot.app.keyboards.user.school import school_about_kb, school_clubs
+from Bot.app.utils.photos import load_school_photos
 from Bot.app.utils.school import get_class_info, get_grad_info
 from Bot.loader import dp, api_client
+from logger import logger
 
 
 @dp.callback_query_handler(text='school_about', state='*')
@@ -27,14 +30,14 @@ async def about_teachers_handler(call: CallbackQuery):
         return
 
     for teacher in teachers:
-        text = (f"ФИО: {teacher['name']} {teacher['surname']}\n\n"
-                f"Возраст: {teacher['age']}\n"
-                f"Опыт работы с детьми: {teacher['experience']}\n"
-                f"Об учителе: {teacher['description']}\n"
+        text = (f"<b>{teacher['fio']}</b>\n"
+                f"Предмет: {teacher['subject']}\n"
                 )
-        await call.message.answer(text=text)
-
-
+        with open(teacher['file_path'], 'rb') as file:
+            if file:
+                await call.message.answer_document(document=file, caption=text)
+            else:
+                await call.message.answer(text=text)
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith('school_classes_'), state='*')
@@ -66,6 +69,7 @@ async def classes_handler(call: CallbackQuery):
             text, kb = class_data
             await call.message.edit_text(text=text,
                                          reply_markup=kb)
+            return
         elif class_grad == 'elementary':
             text = 'Информация о младшей школе'
         elif class_grad == 'middle':
@@ -115,3 +119,69 @@ async def handle_class_number(call: CallbackQuery):
     text, kb = class_data
     await call.message.edit_text(text=text,
                                  reply_markup=kb)
+
+
+@dp.callback_query_handler(text='school_food', state='*')
+async def about_school_food(call: CallbackQuery):
+    text = (f"{config.SCHOOL_FOOD_INFO}\n\n"
+            f"Дополнительная плата в месяц: {config.SCHOOL_FOOD_PRICE}\n"
+            f"Дополнительная плата в год: {config.SCHOOL_FOOD_PRICE * 10}")
+
+    await call.message.edit_text(text=text,
+                                 reply_markup=kb_menu_back)
+
+
+from aiogram.types import InputFile, InlineKeyboardMarkup, InlineKeyboardButton
+
+
+@dp.callback_query_handler(lambda c: c.data.startswith('teachers_class_'), state='*')
+async def teachers_for_class_handle(call: CallbackQuery):
+    class_number = call.data.split('teachers_class_')[-1]
+
+    results = await api_client.get(UserEndpoints.get_teacher_by_class, class_number=class_number)
+
+    if results is False:
+        await call.message.answer(text='❌ Возникла ошибка с получением преподавателей для группы')
+        return
+    elif results is None:
+        await call.message.answer(text='❌ Нет преподавателей или они еще не были добавлены')
+        return
+
+    for teacher in results:
+        text = f"{teacher['fio']}\nГруппа: {class_number}\nПредмет: {teacher['subject']}\n"
+
+        file_path = teacher['file_path']
+        if file_path:
+            document = InputFile(file_path)
+            await call.message.answer_document(document=document, caption=text)
+        else:
+            await call.message.answer(text=text)
+
+
+@dp.callback_query_handler(text='about_schedule', state='*')
+async def schedule_handler(call: CallbackQuery):
+    with open('/Users/mihajustus/KryliaDirectory/BotRouter/app/data/static/schedule.png', 'rb') as file:
+        text = 'Расписание школы для всех классов'
+        if file:
+            await call.message.answer_photo(photo=file, caption=text)
+        else:
+            await call.message.answer(text='❌ Возникла проблема с получением расписаня')
+
+
+@dp.callback_query_handler(text='about_photos', state='*')
+async def send_school_photos(call: CallbackQuery):
+    media_group = await load_school_photos()
+
+    if media_group:
+        try:
+            await call.message.answer_media_group(media=media_group)
+
+            await call.message.answer(text=f"Фотографии были загружены",
+                                      reply_markup=InlineKeyboardMarkup().add(
+                                          InlineKeyboardButton(text='◀️ Назад',
+                                                               callback_data=f'school_start')))
+        except Exception as e:
+            logger.error(f"Error sending media group: {e}")
+            await call.message.answer(text='Произошла ошибка при отправке фотографий.')
+    else:
+        await call.message.answer(text='Не удалось загрузить фотографии.')

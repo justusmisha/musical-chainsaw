@@ -1,5 +1,4 @@
-from typing import List
-
+from typing import Sequence
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +11,7 @@ from BotRouter.app.schemas.classes import SchoolClass
 router = APIRouter()
 
 
-@router.get('/{class_number}', response_model=TeacherSm)
+@router.get('/{class_number}', response_model=Sequence[TeacherSm])
 async def get_teachers_by_class_num(class_number: int, db: AsyncSession = Depends(get_async_session)):
     teachers = await get_teachers_by_class(db=db, class_number=class_number)
     return teachers

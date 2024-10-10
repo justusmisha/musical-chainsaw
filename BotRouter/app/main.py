@@ -7,7 +7,7 @@ from BotRouter.app.api.school import classes_router, teachers_router
 app = FastAPI()
 
 app.include_router(activity_router, prefix="/activity")
-app.include_router(classes_router, prefix="/classes")
+app.include_router(classes_router, prefix="/class")
 app.include_router(teachers_router, prefix="/teacher")
 # app.include_router(payment_router, prefix="/api/v1/payment", tags=["Payment"])
 # app.include_router(subscription_router, prefix="/api/v1/subscription", tags=["Subscription"])

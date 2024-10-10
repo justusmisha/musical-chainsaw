@@ -6,11 +6,9 @@ from pydantic import BaseModel
 
 class TeacherSm(BaseModel):
     id: int
-    name: str
-    surname: str
-    age: int
-    experience: int
-    description: str
+    fio: str
+    subject: str
+    file_path: str
 
 
 class SchoolActivitySm(BaseModel):
