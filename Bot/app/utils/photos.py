@@ -1,6 +1,6 @@
 import os
 
-from aiogram.types import InputMediaPhoto
+from aiogram.types import InputMediaPhoto, InputFile
 
 
 async def load_photos():
@@ -33,3 +33,12 @@ async def load_school_photos():
             print(f"Photo not found: {path}")
 
     return media_group
+
+
+async def get_schedule_photo(day: str):
+    photo_path = f'app/data/static/schedule_days/{day}.jpg'
+
+    if os.path.exists(photo_path):
+        return InputFile(path_or_bytesio=photo_path)
+    else:
+        return False

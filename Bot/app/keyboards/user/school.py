@@ -54,3 +54,16 @@ async def one_activ(activ_name) -> InlineKeyboardMarkup:
     return kb
 
 
+async def schedule_choice() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup()
+
+    kb.row(InlineKeyboardButton(text='Понедельник', callback_data='about_schedule_monday'),
+           InlineKeyboardButton(text='Вторник', callback_data='about_schedule_tuesday'),
+           InlineKeyboardButton(text='Среда', callback_data='about_schedule_wednesday'))
+
+    kb.row(InlineKeyboardButton(text='Четверг', callback_data='about_schedule_thursday'),
+           InlineKeyboardButton(text='Пятница', callback_data='about_schedule_friday'))
+
+    kb.row(InlineKeyboardButton(text='◀️ Назад', callback_data='school_start'))
+
+    return kb

@@ -1,11 +1,11 @@
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton, InputFile
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton, InputFile, InputMedia
 
 from Bot.app.api.endpoints import UserEndpoints
 from Bot.app.data import config
 from Bot.app.keyboards.user.classes import start_classes_menu, get_all_classes_kb
 from Bot.app.keyboards.user.general import kb_menu_back
-from Bot.app.keyboards.user.school import school_about_kb, school_clubs
-from Bot.app.utils.photos import load_school_photos
+from Bot.app.keyboards.user.school import school_about_kb, school_clubs, schedule_choice
+from Bot.app.utils.photos import load_school_photos, get_schedule_photo
 from Bot.app.utils.school import get_class_info, get_grad_info
 from Bot.loader import dp, api_client
 from logger import logger
@@ -160,12 +160,26 @@ async def teachers_for_class_handle(call: CallbackQuery):
 
 @dp.callback_query_handler(text='about_schedule', state='*')
 async def schedule_handler(call: CallbackQuery):
-    with open('/Users/mihajustus/KryliaDirectory/BotRouter/app/data/static/schedule.png', 'rb') as file:
-        text = 'Расписание школы для всех классов'
-        if file:
-            await call.message.answer_photo(photo=file, caption=text)
-        else:
-            await call.message.answer(text='❌ Возникла проблема с получением расписаня')
+    kb = await schedule_choice()
+    await call.message.edit_text(text='Выберите день недели', reply_markup=kb)
+
+
+@dp.callback_query_handler(lambda c: c.data.startswith('about_schedule_'), state='*')
+async def schedule_day_handler(call: CallbackQuery):
+    day = call.data.split('about_schedule_')[-1]
+    photo = await get_schedule_photo(day)
+    if not photo:
+        await call.message.answer(text='❌ Возникла проблема с загрузкой расписания')
+        return
+    days_trans = {
+        'monday': 'Понедельник',
+        'tuesday': 'Вторник',
+        'wednesday': 'Среда',
+        'thursday': 'Четверг',
+        'friday': 'Пятница',
+    }
+    await call.message.answer_photo(photo=photo, caption=f'Расписание на {days_trans[day]}',
+                                    reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton(text='◀️ Назад', callback_data='school_start_answer')))
 
 
 @dp.callback_query_handler(text='about_photos', state='*')

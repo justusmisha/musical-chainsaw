@@ -11,6 +11,13 @@ async def school_handler(call: CallbackQuery):
                                  reply_markup=kb)
 
 
+@dp.callback_query_handler(text='school_start_answer')
+async def school_handler(call: CallbackQuery):
+    kb = await school_menu()
+    await call.message.answer(text='Подробнее о каждом из пунктов:',
+                                 reply_markup=kb)
+
+
 @dp.callback_query_handler(text='addit_classes_start')
 async def school_handler(call: CallbackQuery):
     kb = 1
